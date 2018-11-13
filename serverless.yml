@@ -10,9 +10,42 @@ provider:
         - "lambda:*"
       Resource:
         - "*"
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource: arn:aws:sqs:${env:MY_AWS_REGION}:${env:AWS_ACCOUNTID}:${env:SQS_QUEUE_NAME}
 plugins:
   - serverless-dotenv-plugin
+  - serverless-sqs-alarms-plugin
+package:
+  exclude:
+    - docs/**
+    - helpers/**
+    - node_modules/**
+    - test/**
 functions:
   hello:
     handler: handler.hello
+
+resources:
+  Resources:
+
+    MyQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${env:SQS_QUEUE_NAME}
+        MessageRetentionPeriod: 1209600
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - MessagesDeadLetterQueue
+            - Arn
+          maxReceiveCount: 10
+
+    MessagesDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${env:SQS_QUEUE_NAME}-dead-letter-queue
+        MessageRetentionPeriod: 1209600
 
