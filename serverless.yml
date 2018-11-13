@@ -1,0 +1,18 @@
+service: sample 
+provider:
+  name: aws
+  runtime: nodejs8.10
+  profile: ${env:AWS_PROFILE}
+  region: ${env:MY_AWS_REGION}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "lambda:*"
+      Resource:
+        - "*"
+plugins:
+  - serverless-dotenv-plugin
+functions:
+  hello:
+    handler: handler.hello
+
