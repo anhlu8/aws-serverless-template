@@ -17,7 +17,10 @@ provider:
 plugins:
   - serverless-dotenv-plugin
   - serverless-sqs-alarms-plugin
+  - serverless-offline
 package:
+  include:
+    -utils/**
   exclude:
     - docs/**
     - helpers/**
@@ -25,7 +28,11 @@ package:
     - test/**
 functions:
   hello:
-    handler: handler.hello
+    handler: src/handler.hello
+    events:
+      - http:
+        path: message/{name} #this is the end point: http://localhost:3000/message => the name params will be in the event
+        method: get
 
 resources:
   Resources:
