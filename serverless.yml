@@ -33,7 +33,10 @@ functions:
       - http:
         path: message/{name} #this is the end point: http://localhost:3000/message => the name params will be in the event
         method: get
-
+  cron:
+    handler: src/handler.cron
+    events:
+      schedule: rate(1 minute) # this function will be invoked every 1 minute => https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
 resources:
   Resources:
 
